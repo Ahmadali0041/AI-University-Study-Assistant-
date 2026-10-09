@@ -355,6 +355,7 @@ QUIZ:
     llm = get_llm()
 
     response = llm.invoke(prompt)
+    print("QUIZ RESPONSE:", response.content)
     return response.content
 
 
