@@ -6,4 +6,5 @@ langchain-text-splitters
 langchain-ollama
 chromadb
 pypdf
-
+langchain-groq
+sentence-transformers
