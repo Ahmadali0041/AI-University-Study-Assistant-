@@ -88,6 +88,8 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
   
     # Remove empty PDF pages
     
+    
+   
     pages = [
         page
         for page in pages
@@ -99,13 +101,8 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
         chunk_overlap=CHUNK_OVERLAP,
         separators=["\n\n", "\n", ". ", " ", ""],
     )
-        chunk_size=CHUNK_SIZE,
-        chunk_overlap=CHUNK_OVERLAP,
-        separators=["\n\n", "\n", ". ", " ", ""],
-    )
 
     chunks = splitter.split_documents(pages)
-
     # Add human-friendly page numbers
     for chunk in chunks:
         page_number = chunk.metadata.get("page", 0)
