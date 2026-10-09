@@ -93,7 +93,7 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
         if page.page_content and page.page_content.strip()
     ]
 
-    splitter = RecursiveCharacterTextSplitter(
+        splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
         separators=["\n\n", "\n", ". ", " ", ""],
@@ -116,7 +116,6 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
     )
 
     return vectorstore, len(pages), len(chunks)
-
 
 # ============================================================
 # DOCUMENT HELPERS
