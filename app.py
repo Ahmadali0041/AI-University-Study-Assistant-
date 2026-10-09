@@ -681,14 +681,14 @@ with tab_quiz:
             "Creating a fast 5-question quiz..."
         ):
 
+            
             try:
                 st.session_state.quiz = generate_quiz(
                     vectorstore
                 )
 
             except Exception as e:
-    st.error(f"Could not generate the quiz: {e}")
-
+                st.error(f"Could not generate the quiz: {e}")
     if st.session_state.quiz:
         st.markdown("### Practice Quiz")
         st.markdown(st.session_state.quiz)
