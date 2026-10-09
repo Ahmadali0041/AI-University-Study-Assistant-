@@ -101,12 +101,12 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
     chunks = splitter.split_documents(pages)
 
     # Add human-friendly page numbers
-    for chunk in chunks:
+        for chunk in chunks:
         page_number = chunk.metadata.get("page", 0)
         chunk.metadata["page_number"] = int(page_number) + 1
         chunk.metadata["source_file"] = file_name
 
-   embeddings = get_embedding()
+    embeddings = get_embedding()
 
     vectorstore = Chroma.from_documents(
         documents=chunks,
