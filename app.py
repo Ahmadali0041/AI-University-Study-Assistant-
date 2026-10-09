@@ -106,7 +106,7 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
         chunk.metadata["page_number"] = int(page_number) + 1
         chunk.metadata["source_file"] = file_name
 
-    embeddings = get_embeddings()
+   embeddings = get_embedding()
 
     vectorstore = Chroma.from_documents(
         documents=chunks,
