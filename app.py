@@ -4,7 +4,8 @@ import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_ollama import ChatOllama, OllamaEmbeddings
+from langchain_groq import ChatGroq
+from langchain_community.embeddings import HuggingFaceEmbeddings
 
 
 # ============================================================
@@ -14,8 +15,8 @@ from langchain_ollama import ChatOllama, OllamaEmbeddings
 
 APP_TITLE = "📚 AI University Study Assistant"
 
-LLM_MODEL = "llama3.2:1b"
-EMBEDDING_MODEL = "nomic-embed-text"
+LLM_MODEL = "llama-3.1-8b-instant"
+EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Fast PDF settings
 CHUNK_SIZE = 800
@@ -44,18 +45,22 @@ st.set_page_config(
 # LOCAL AI
 # ============================================================
 
+# ONLINE AI
 @st.cache_resource
 def get_llm():
-    return ChatOllama(
+    return ChatGroq(
         model=LLM_MODEL,
         temperature=0.1,
-        num_predict=QA_MAX_TOKENS,
+        max_tokens=QA_MAX_TOKENS,
+        api_key=st.secrets["GROQ_API_KEY"],
     )
 
 
 @st.cache_resource
-def get_embeddings():
-    return OllamaEmbeddings(model=EMBEDDING_MODEL)
+def get_embedding():
+    return HuggingFaceEmbeddings(
+        model_name=EMBEDDING_MODEL
+    )
 
 
 # ============================================================
@@ -248,11 +253,7 @@ PDF CONTENT:
 SUMMARY:
 """
 
-    llm = ChatOllama(
-        model=LLM_MODEL,
-        temperature=0.1,
-        num_predict=SUMMARY_MAX_TOKENS,
-    )
+    llm = get_llm()
 
     response = llm.invoke(prompt)
     return response.content
@@ -287,15 +288,16 @@ PDF CONTENT:
 
 STUDY NOTES:
 """
-
-    llm = ChatOllama(
+    llm = ChatGroq(
         model=LLM_MODEL,
         temperature=0.1,
-        num_predict=NOTES_MAX_TOKENS,
+        max_tokens=NOTES_MAX_TOKENS,
+        api_key=st.secrets["GROQ_API_KEY"],
     )
 
     response = llm.invoke(prompt)
     return response.content
+   
 
 
 # ============================================================
@@ -348,11 +350,7 @@ PDF CONTENT:
 QUIZ:
 """
 
-    llm = ChatOllama(
-        model=LLM_MODEL,
-        temperature=0.1,
-        num_predict=QUIZ_MAX_TOKENS,
-    )
+    llm = get_llm()
 
     response = llm.invoke(prompt)
     return response.content
