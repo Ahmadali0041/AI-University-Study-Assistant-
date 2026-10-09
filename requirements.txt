@@ -7,4 +7,4 @@ chromadb
 pypdf
 langchain-groq
 sentence-transformers
-
+torchvision
