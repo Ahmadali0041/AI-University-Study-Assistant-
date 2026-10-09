@@ -460,9 +460,10 @@ See which PDF pages were used for answers.
 
 ### 🔒 100% Local AI
 
-The application runs through **Ollama + Llama 3.2 + Chroma + LangChain**.
+The application uses an AI model to help students study university materials.
 
-No OpenAI API key or paid AI service is required.
+Upload a PDF to generate answers, summaries, study notes, and quizzes.
+
 """
     )
 
@@ -705,6 +706,6 @@ st.divider()
 
 st.caption(
     "📚 AI University Study Assistant | "
-    "Powered by Ollama + Llama 3.2 + Chroma + LangChain | "
-    "100% Local AI"
+    "AI-powered study tools | "
+   "PDF summaries, notes and quizzes"
 )
