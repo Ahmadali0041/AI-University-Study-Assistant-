@@ -687,10 +687,7 @@ with tab_quiz:
                 )
 
             except Exception as e:
-                st.error(
-                    "Could not generate the quiz."
-                )
-                st.code(str(e))
+    st.error(f"Could not generate the quiz: {e}")
 
     if st.session_state.quiz:
         st.markdown("### Practice Quiz")
