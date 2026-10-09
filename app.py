@@ -99,7 +99,7 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
         separators=["\n\n", "\n", ". ", " ", ""],
     )
 
-        chunks = splitter.split_documents(pages)
+    chunks = splitter.split_documents(pages)
 
     # Add human-friendly page numbers
     for chunk in chunks:
