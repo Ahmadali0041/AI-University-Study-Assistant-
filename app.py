@@ -85,6 +85,7 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
     loader = PyPDFLoader(temp_path)
     pages = loader.load()
 
+  
     # Remove empty PDF pages
     pages = [
         page
@@ -98,7 +99,7 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
         separators=["\n\n", "\n", ". ", " ", ""],
     )
 
-        chunks = splitter.split_documents(pages)
+    chunks = splitter.split_documents(pages)
 
     # Add human-friendly page numbers
     for chunk in chunks:
@@ -108,15 +109,12 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
 
     embeddings = get_embedding()
 
-    vectorstore = Chroma.from_documents(
+        vectorstore = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
         collection_name=f"study_assistant_{file_hash[:16]}",
     )
-        documents=chunks,
-        embedding=embeddings,
-        collection_name=f"study_assistant_{file_hash[:16]}",
-    )
+       
 
     return vectorstore, len(pages), len(chunks)
 
