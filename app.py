@@ -15,7 +15,7 @@ from langchain_community.embeddings import HuggingFaceEmbeddings
 
 APP_TITLE = "📚 AI University Study Assistant"
 
-LLM_MODEL = "llama-3.1-8b-instant"
+LLM_MODEL = "openai/gpt-oss-20b"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Fast PDF settings
