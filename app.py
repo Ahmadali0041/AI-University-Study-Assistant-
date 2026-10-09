@@ -615,11 +615,8 @@ with tab_summary:
                     vectorstore
                 )
 
-            except Exception as e:
-                st.error(
-                    "Could not generate the summary."
-                )
-                st.code(str(e))
+           except Exception as e:
+    st.error(f"Could not generate the summary: {e}")
 
     if st.session_state.summary:
         st.markdown("### Summary")
