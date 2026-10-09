@@ -87,13 +87,18 @@ def load_and_vectorize(file_bytes, file_name, file_hash):
 
   
     # Remove empty PDF pages
+    
     pages = [
         page
         for page in pages
         if page.page_content and page.page_content.strip()
     ]
 
-        splitter = RecursiveCharacterTextSplitter(
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=CHUNK_OVERLAP,
+        separators=["\n\n", "\n", ". ", " ", ""],
+    )
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
         separators=["\n\n", "\n", ". ", " ", ""],
