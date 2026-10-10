@@ -143,29 +143,18 @@ def format_sources(docs):
     return ", ".join(f"Page {page}" for page in pages)
 
 
-def get_representative_content(vectorstore, max_chunks=3):
-    """
-    Get a small, evenly distributed selection of document chunks.
 
-    The full PDF stays inside Chroma for question answering.
-    Summary, Notes and Quiz use only a few representative chunks
-    so those features are much faster during the demonstration.
-    """
-
-    data = vectorstore.get()
-
-    documents = data.get("documents", []) if data else []
+def get_representative_content(vectorstore, max_chunks=None):
+    """Return all document chunks for full-document processing."""
+    data = vectorstore.get(include=["documents"])
+    documents = data.get("documents", [])
 
     if not documents:
-        return ""
+        return "No document content found."
 
-    if len(documents) <= max_chunks:
-        selected_documents = documents
-    else:
-        step = max(1, len(documents) // max_chunks)
-        selected_documents = documents[::step][:max_chunks]
-
-    return "\n\n".join(selected_documents)
+    return "\n\n".join(
+        document for document in documents if document and document.strip()
+    )
 
 
 # ============================================================
