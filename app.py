@@ -692,7 +692,12 @@ with tab_quiz:
                 st.error(f"Could not generate the quiz: {e}")
     if st.session_state.quiz:
         st.markdown("### Practice Quiz")
-        st.markdown(st.session_state.quiz)
+        
+            questions = st.session_state.quiz.split("\n\n")
+            for i, question in enumerate(questions):
+                if question.strip():
+                    st.markdown(f"### Question {i + 1}")
+                    st.markdown(question)
 
 
 # ============================================================
