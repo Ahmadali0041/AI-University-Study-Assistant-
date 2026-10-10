@@ -144,7 +144,7 @@ def format_sources(docs):
 
 
 
-def get_representative_content(vectorstore, max_chunks=None):
+def get_representative_content(vectorstore):
     """Return all document chunks for full-document processing."""
     data = vectorstore.get(include=["documents"])
     documents = data.get("documents", [])
@@ -218,35 +218,52 @@ ANSWER:
 # FAST SUMMARY
 # ============================================================
 
-def generate_summary(vectorstore):
-    content = get_representative_content(
-        vectorstore,
-        max_chunks=3,
-    )
 
-    if not content:
+def generate_summary(vectorstore):
+    data = vectorstore.get(include=["documents"])
+    documents = [
+        doc for doc in data.get("documents", [])
+        if doc and doc.strip()
+    ]
+
+    if not documents:
         return "Unable to retrieve document content."
 
-    prompt = f"""
-Create a short university study summary using ONLY the PDF content below.
+    llm = get_llm()
+    partial_summaries = []
+
+    for index, document in enumerate(documents, start=1):
+        prompt = f"""
+Summarize this section of a university study PDF.
+
+Rules:
+- Use only the supplied text.
+- Include important concepts, definitions, and facts.
+- Use simple, student-friendly language.
+- Do not invent information.
+- Keep this section summary concise.
+
+PDF SECTION:
+{document}
+"""
+        response = llm.invoke(prompt)
+        partial_summaries.append(response.content)
+
+    final_prompt = f"""
+Create a comprehensive university study summary of the PDF
+using all the section summaries below.
 
 Requirements:
-- 5 to 7 bullet points.
-- Include the most important concepts.
-- Use simple student-friendly language.
+- Organize the result into 5 to 12 clear bullet points.
+- Include the most important concepts from across the document.
+- Use simple, student-friendly language.
 - Do not add outside knowledge.
-- Do not make up information.
-- Keep it concise.
+- Avoid unnecessary repetition.
 
-PDF CONTENT:
-{content}
-
-SUMMARY:
+SECTION SUMMARIES:
+{"".join(chr(10) + summary for summary in partial_summaries)}
 """
-
-    llm = get_llm()
-
-    response = llm.invoke(prompt)
+    response = llm.invoke(final_prompt)
     return response.content
 
 
@@ -254,31 +271,17 @@ SUMMARY:
 # FAST STUDY NOTES
 # ============================================================
 
-def generate_notes(vectorstore):
-    content = get_representative_content(
-        vectorstore,
-        max_chunks=3,
-    )
 
-    if not content:
+def generate_notes(vectorstore):
+    data = vectorstore.get(include=["documents"])
+    documents = [
+        doc for doc in data.get("documents", [])
+        if doc and doc.strip()
+    ]
+
+    if not documents:
         return "Unable to retrieve document content."
 
-    prompt = f"""
-Create concise exam-oriented study notes using ONLY the PDF content below.
-
-Requirements:
-- Use headings and bullet points.
-- Include definitions or important facts that appear in the text.
-- Keep explanations short.
-- Make the notes easy to revise.
-- Do not use outside knowledge.
-- Do not invent information.
-
-PDF CONTENT:
-{content}
-
-STUDY NOTES:
-"""
     llm = ChatGroq(
         model=LLM_MODEL,
         temperature=0.1,
@@ -286,7 +289,42 @@ STUDY NOTES:
         api_key=st.secrets["GROQ_API_KEY"],
     )
 
-    response = llm.invoke(prompt)
+    section_notes = []
+
+    for document in documents:
+        prompt = f"""
+Create concise exam-oriented study notes from this PDF section.
+
+Requirements:
+- Use headings and bullet points.
+- Include important definitions, concepts, and facts.
+- Keep explanations short and easy to revise.
+- Use only the supplied text.
+- Do not invent information.
+
+PDF SECTION:
+{document}
+
+STUDY NOTES:
+"""
+        response = llm.invoke(prompt)
+        section_notes.append(response.content)
+
+    final_prompt = f"""
+Combine the following section notes into comprehensive study notes
+for the entire PDF.
+
+Requirements:
+- Use clear headings and bullet points.
+- Preserve important definitions, concepts, and facts.
+- Remove unnecessary repetition.
+- Use simple, student-friendly language.
+- Do not add outside knowledge.
+
+SECTION NOTES:
+{"".join(chr(10) + notes for notes in section_notes)}
+"""
+    response = llm.invoke(final_prompt)
     return response.content
    
 
@@ -295,29 +333,35 @@ STUDY NOTES:
 # FAST QUIZ
 # ============================================================
 
-def generate_quiz(vectorstore):
-    content = get_representative_content(
-        vectorstore,
-        max_chunks=3,
-    )
 
-    if not content:
+def generate_quiz(vectorstore):
+    data = vectorstore.get(include=["documents"])
+    documents = [
+        doc for doc in data.get("documents", [])
+        if doc and doc.strip()
+    ]
+
+    if not documents:
         return "Unable to retrieve document content."
 
-    prompt = f"""
+    llm = get_llm()
+    question_sets = []
+
+    for document in documents:
+        prompt = f"""
 You are a university quiz generator.
 
-Create EXACTLY 5 multiple-choice questions using ONLY the PDF content.
+Create up to 2 multiple-choice questions from this PDF section.
+If the section does not contain enough information, create fewer.
 
 Rules:
-- Each question must have four options: A, B, C and D.
+- Use only the supplied text.
+- Each question must have four options: A, B, C, D.
 - Mark the correct answer.
 - Keep questions and options short.
-- Do not use outside knowledge.
 - Do not invent information.
-- Do not add explanations unless necessary.
 
-Use this exact format:
+Use this format:
 
 1. Question
 A. Option
@@ -326,27 +370,38 @@ C. Option
 D. Option
 Correct Answer: B
 
-2. Question
-A. Option
-B. Option
-C. Option
-D. Option
-Correct Answer: A
-
-Continue until exactly 5 questions are created.
-
-PDF CONTENT:
-{content}
+PDF SECTION:
+{document}
 
 QUIZ:
 """
+        response = llm.invoke(prompt)
+        if response.content.strip():
+            question_sets.append(response.content.strip())
 
-    llm = get_llm()
+    if not question_sets:
+        return "Unable to generate quiz questions from this PDF."
 
-    response = llm.invoke(prompt)
-    print("QUIZ RESPONSE:", response.content)
+    final_prompt = f"""
+Create a quiz with EXACTLY 5 multiple-choice questions using
+the section question sets below.
+
+Rules:
+- Choose questions covering different important topics.
+- Each question must have four options: A, B, C, D.
+- Include exactly one correct answer for each question.
+- Mark each correct answer.
+- Use only information in the supplied question sets.
+- Do not invent facts.
+- Output exactly 5 questions in the same numbered format.
+
+SECTION QUESTION SETS:
+{"".join(chr(10) + questions for questions in question_sets)}
+
+FINAL QUIZ:
+"""
+    response = llm.invoke(final_prompt)
     return response.content
-
 
 # ============================================================
 # SESSION STATE
@@ -395,12 +450,7 @@ with st.sidebar:
 
     st.divider()
 
-    st.markdown("### 🚀 Fast Demo Mode")
-    st.caption(
-        "Questions use relevant PDF chunks. "
-        "Summary, Notes and Quiz use a small representative "
-        "selection so the demonstration stays fast."
-    )
+    
 
     if st.button(
         "🗑️ Clear Chat",
@@ -586,10 +636,10 @@ with tab_summary:
 
     st.subheader("📝 AI Summary")
 
-    st.write(
-        "Generate a short summary from representative sections "
-        "of your PDF for a fast classroom demonstration."
-    )
+    
+            st.write(
+                "Generate a comprehensive summary of your entire PDF."
+            )
 
     if st.button(
         "📝 Generate Summary",
@@ -597,8 +647,7 @@ with tab_summary:
     ):
 
         with st.spinner(
-            "Creating a fast summary..."
-        ):
+            "Creating a summary from your PDF..."
 
             try:
                 st.session_state.summary = generate_summary(
@@ -631,8 +680,7 @@ with tab_notes:
     ):
 
         with st.spinner(
-            "Creating fast study notes..."
-        ):
+           "Creating study notes from your PDF..."
 
             try:
                 st.session_state.notes = generate_notes(
@@ -668,8 +716,7 @@ with tab_quiz:
     ):
 
         with st.spinner(
-            "Creating a fast 5-question quiz..."
-        ):
+            "Creating a quiz from your PDF..."
 
             
             try:
