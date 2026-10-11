@@ -671,23 +671,22 @@ with tab_notes:
         "Generate concise exam-oriented notes from the PDF."
     )
 
-            if st.button(
-            "📝 Generate Summary",
-            use_container_width=True,
-        ):
-             with st.spinner(
-                "Creating a summary from your PDF..."
-            ):
-                try:
-                    st.session_state.summary = generate_summary(
-                        vectorstore
-                    )
-                except Exception as e:
-                    st.error(f"Could not generate the summary: {e}")
+    
+   
+if st.button(
+    "📝 Generate Study Notes",
+    use_container_width=True,
+):
+    with st.spinner("Creating study notes from your PDF..."):
+        try:
+            st.session_state.notes = generate_notes(vectorstore)
+        except Exception as e:
+            st.error(f"Could not generate study notes: {e}")
 
-            if st.session_state.summary:
-                st.markdown("### Summary")
-                st.markdown(st.session_state.summary)
+if st.session_state.get("notes"):
+    st.markdown("### Study Notes")
+    st.markdown(st.session_state.notes)
+
 
 # ============================================================
 # QUIZ
