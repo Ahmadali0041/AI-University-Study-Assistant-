@@ -640,7 +640,7 @@ with tab_summary:
         "Generate a comprehensive summary of your entire PDF."
     )
 
-            if st.button(
+    if st.button(
             "📝 Generate Summary",
             use_container_width=True,
         ):
