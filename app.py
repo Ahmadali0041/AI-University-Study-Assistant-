@@ -705,17 +705,15 @@ with tab_quiz:
         use_container_width=True,
     ):
 
-        with st.spinner(
-            "Creating a quiz from your PDF..."
-
-            
-            try:
-                st.session_state.quiz = generate_quiz(
+               with st.spinner("Creating a quiz from your PDF..."):
+                   try:
+                    st.session_state.quiz = generate_quiz(
                     vectorstore
                 )
-
             except Exception as e:
                 st.error(f"Could not generate the quiz: {e}")
+
+            
     
 
    
