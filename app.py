@@ -25,7 +25,7 @@ QA_TOP_K = 3
 
 # Short generation limits keep the live demo responsive
 QA_MAX_TOKENS = 300
-SUMMARY_MAX_TOKENS = 300
+SUMMARY_MAX_TOKENS = 800
 NOTES_MAX_TOKENS = 350
 QUIZ_MAX_TOKENS = 500
 
@@ -51,7 +51,7 @@ def get_llm():
     return ChatGroq(
         model=LLM_MODEL,
         temperature=0.1,
-        max_tokens=QA_MAX_TOKENS,
+max_tokens=QA_MAX_TOKENS,
         api_key=st.secrets["GROQ_API_KEY"],
     )
 
@@ -640,25 +640,23 @@ with tab_summary:
         "Generate a comprehensive summary of your entire PDF."
     )
 
-    if st.button(
-        "📝 Generate Summary",
-        use_container_width=True,
-    ):
-
+            if st.button(
+            "📝 Generate Summary",
+            use_container_width=True,
+        ):
         with st.spinner(
-            "Creating a summary from your PDF..."
-
+               "Creating a summary from your PDF..."
+        ):
             try:
                 st.session_state.summary = generate_summary(
                     vectorstore
                 )
-
             except Exception as e:
                 st.error(f"Could not generate the summary: {e}")
 
-    if st.session_state.summary:
-        st.markdown("### Summary")
-        st.markdown(st.session_state.summary)
+        if st.session_state.summary:
+            st.markdown("### Summary")
+            st.markdown(st.session_state.summary)
 
 
 # ============================================================
@@ -673,29 +671,23 @@ with tab_notes:
         "Generate concise exam-oriented notes from the PDF."
     )
 
-    if st.button(
-        "📖 Generate Study Notes",
-        use_container_width=True,
-    ):
+            if st.button(
+            "📝 Generate Summary",
+            use_container_width=True,
+        ):
+             with st.spinner(
+                "Creating a summary from your PDF..."
+            ):
+                try:
+                    st.session_state.summary = generate_summary(
+                        vectorstore
+                    )
+                except Exception as e:
+                    st.error(f"Could not generate the summary: {e}")
 
-        with st.spinner(
-           "Creating study notes from your PDF..."
-
-            try:
-                st.session_state.notes = generate_notes(
-                    vectorstore
-                )
-
-            except Exception as e:
-                st.error(
-                    "Could not generate study notes."
-                )
-                st.code(str(e))
-
-    if st.session_state.notes:
-        st.markdown("### Study Notes")
-        st.markdown(st.session_state.notes)
-
+            if st.session_state.summary:
+                st.markdown("### Summary")
+                st.markdown(st.session_state.summary)
 
 # ============================================================
 # QUIZ
