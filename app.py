@@ -636,10 +636,9 @@ with tab_summary:
 
     st.subheader("📝 AI Summary")
 
-    
-            st.write(
-                "Generate a comprehensive summary of your entire PDF."
-            )
+    st.write(
+        "Generate a comprehensive summary of your entire PDF."
+    )
 
     if st.button(
         "📝 Generate Summary",
