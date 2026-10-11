@@ -19,15 +19,15 @@ LLM_MODEL = "openai/gpt-oss-20b"
 EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Fast PDF settings
-CHUNK_SIZE = 800
-CHUNK_OVERLAP = 80
+CHUNK_SIZE = 1500
+CHUNK_OVERLAP = 200
 QA_TOP_K = 3
 
 # Short generation limits keep the live demo responsive
-QA_MAX_TOKENS = 300
-SUMMARY_MAX_TOKENS = 800
-NOTES_MAX_TOKENS = 350
-QUIZ_MAX_TOKENS = 500
+QA_MAX_TOKENS = 500
+SUMMARY_MAX_TOKENS = 1800
+NOTES_MAX_TOKENS = 1800
+QUIZ_MAX_TOKENS = 1200
 
 
 # ============================================================
@@ -51,7 +51,7 @@ def get_llm():
     return ChatGroq(
         model=LLM_MODEL,
         temperature=0.1,
-max_tokens=QA_MAX_TOKENS,
+        max_tokens=QA_MAX_TOKENS,
         api_key=st.secrets["GROQ_API_KEY"],
     )
 
